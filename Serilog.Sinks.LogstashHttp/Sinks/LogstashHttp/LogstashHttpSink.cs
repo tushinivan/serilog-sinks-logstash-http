@@ -79,6 +79,7 @@ namespace Serilog.Sinks.LogstashHttp
                     var stringContent = new StringContent(logData);
                     stringContent.Headers.Remove("Content-Type");
                     stringContent.Headers.Add("Content-Type", "application/json");
+                    stringContent.Headers.Add("Authorization", $"{_state.Options.UserName} {_state.Options.UserPassword}");
 
                     // Using singleton of HttpClient so we need ensure of thread safety. Just use LockAsync.
                     using (await Mutex.LockAsync().ConfigureAwait(false))

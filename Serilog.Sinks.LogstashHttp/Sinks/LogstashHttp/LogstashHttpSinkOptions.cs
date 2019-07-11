@@ -83,5 +83,9 @@ namespace Serilog.Sinks.LogstashHttp
         ///     Password for basic authorization
         /// </summary>
         public string UserPassword { get; set; }
+        /// <summary>
+        ///     Send log messages by packages.
+        /// </summary>
+        public bool BulkInsert { get; set; }
     }
 }

@@ -1,26 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 
 namespace Serilog.Sinks.LogstashHttp.ExampleApp
 {
-    public class Program
+    class Program
     {
-        public static void Main(string[] args)
+        static void Main(string[] args)
         {
-            var host = new WebHostBuilder()
-                .UseKestrel()
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseIISIntegration()
-                .UseStartup<Startup>()
-                .UseApplicationInsights()
-                .Build();
+            var logger = new LoggerConfiguration()
+                .Enrich.WithProperty("app", "def")
+                .WriteTo.LogstashHttp(new LogstashHttpSinkOptions()
+                {
+                    LogstashUri = "http://localhost.ru:8080/",
+                    UserName = "user",
+                    UserPassword = "password",
+                    InlineFields = true,
+                    BulkInsert = true
+                })
+                .CreateLogger();
 
-            host.Run();
+            logger.Information("Test message");
+            logger.Dispose();
         }
     }
 }

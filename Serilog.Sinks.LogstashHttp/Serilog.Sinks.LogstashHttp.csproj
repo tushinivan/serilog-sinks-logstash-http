@@ -14,8 +14,8 @@
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
     <AssemblyName>Serilog.Sinks.Logstash</AssemblyName>
-    <PackageLicenseExpression>Apache 2</PackageLicenseExpression>
-    <PackageReleaseNotes>Add options for http basic authorization.</PackageReleaseNotes>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageReleaseNotes>Added options for http basic authorization.</PackageReleaseNotes>
     <PackageId>Serilog.Sinks.LogstashHttpInput</PackageId>
   </PropertyGroup>
 

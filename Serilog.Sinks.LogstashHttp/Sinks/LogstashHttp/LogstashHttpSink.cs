@@ -35,6 +35,7 @@ namespace Serilog.Sinks.LogstashHttp
         private static readonly AsyncLock Mutex = new AsyncLock();
 
         private readonly LogstashHttpSinkState _state;
+        private readonly string authorizationHeader = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LogstashHttpSink"/> class with the provided options
@@ -46,6 +47,11 @@ namespace Serilog.Sinks.LogstashHttp
             : base(options.BatchPostingLimit, options.Period)
         {
             _state = LogstashHttpSinkState.Create(options);
+            if (options.UserName?.Length > 0 && options.UserPassword?.Length > 0)
+            {
+                string base64 = Base64Encode($"{_state.Options.UserName}:{_state.Options.UserPassword}");
+                authorizationHeader = $"Basic {base64}";
+            }
         }
 
         /// <summary>
@@ -79,7 +85,12 @@ namespace Serilog.Sinks.LogstashHttp
                     var stringContent = new StringContent(logData);
                     stringContent.Headers.Remove("Content-Type");
                     stringContent.Headers.Add("Content-Type", "application/json");
-                    stringContent.Headers.Add("Authorization", $"{_state.Options.UserName} {_state.Options.UserPassword}");
+
+                    if (authorizationHeader != null)
+                    {
+                        stringContent.Headers.Add("Authorization", authorizationHeader);
+                    }
+                    
 
                     // Using singleton of HttpClient so we need ensure of thread safety. Just use LockAsync.
                     using (await Mutex.LockAsync().ConfigureAwait(false))
@@ -93,6 +104,17 @@ namespace Serilog.Sinks.LogstashHttp
                     throw ex;
                 }
             }
+        }
+
+        /// <summary>
+        /// Encoding to Base64 string.
+        /// </summary>
+        /// <param name="plainText"></param>
+        /// <returns></returns>
+        private string Base64Encode(string plainText)
+        {
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+            return Convert.ToBase64String(plainTextBytes);
         }
     }
 }
